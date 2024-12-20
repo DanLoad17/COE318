@@ -1,0 +1,215 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package coe318.lab7;
+
+/**
+ *
+ * @author zelen
+ */
+public class Voltage {
+    private int track = 0;
+    private static int indi = 1;
+    private int n1, n2;
+    private double voltages;
+    
+    
+    public Voltage(int n1, int n2, double voltage){
+        this.voltages = voltage;
+        this.n1 = n1;
+        this.n2 = n2;
+        track = indi;
+        indi = indi + 1;
+
+    }
+    
+    public int[] getNodes(){
+        int volNodes[] = new int[2];
+        volNodes[0] = n1;
+        volNodes[1] = n2;
+        return volNodes;
+    }
+    
+    @Override
+    public String toString(){
+        String voVal;
+        
+        voVal ="V";
+        voVal = voVal + track;
+        voVal = voVal + " " + n1;
+        voVal = voVal + " " + n2;
+        voVal = voVal + "DC";
+        voVal = voVal + " " + voltages;
+        
+        return voVal;
+    }
+}
+
+
+
+
+
+--------------------------------------
+
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package coe318.lab7;
+
+/**
+ *
+ * @author zelen
+ */
+public class Resistor {
+    private int track = 0;
+    private static int indi = 1;
+    private int n1, n2;
+    private double resi;
+    
+    
+    public Resistor(int n1, int n2, double resistance){
+        this.resi = resistance;
+        this.n1 = n1;
+        this.n2 = n2;
+        track = indi;
+        indi = indi + 1;
+
+    }
+    
+    public int[] getNodes(){
+        int resNodes[] = new int[2];
+        resNodes[0] = n1;
+        resNodes[1] = n2;
+        return resNodes;
+    }
+    
+    @Override
+    public String toString(){
+        String reVal;
+        
+        reVal ="R";
+        reVal = reVal + track;
+        reVal = reVal + " " + n1;
+        reVal = reVal + " " + n2;
+        reVal = reVal + " " + resi;
+        
+        return reVal;
+    }
+}
+
+
+
+
+-----------------------------------------------
+
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package coe318.lab7;
+
+import java.util.Scanner;
+import java.util.ArrayList;
+/**
+ *
+ * @author zelen
+ */
+public class UserMain {
+private static int val1, val2;
+private static double valGiven;
+
+public static void main(String[] args){
+    Scanner userin = new Scanner(System.in);
+    AnalogCircuit ana = AnalogCircuit.getInstance();
+    String space = "";
+    
+    while(userin != null){
+        space = userin.nextLine();
+        String ciVal[] = space.split(" ");
+        if (ciVal.length > 4){
+            space = "";
+            throw new IllegalArgumentException("Invalid input. Enter v or r, the the node values and resistance/voltage value");
+        }
+        if(space.equals("spice"))
+            System.out.println(ana.toString());
+        if(space.startsWith("v") || space.startsWith("V")){
+            val1 = Integer.parseInt(ciVal[1]);
+            val2 = Integer.parseInt(ciVal[2]);
+            valGiven = Double.parseDouble(ciVal[3]);
+            Voltage vo = new Voltage (val1, val2, valGiven);
+            ana.addVoltage(vo);
+        }
+        if(space.startsWith("r") || space.startsWith("R")){
+            val1 = Integer.parseInt(ciVal[1]);
+            val2 = Integer.parseInt(ciVal[2]);
+            valGiven = Double.parseDouble(ciVal[3]);
+            Resistor re = new Resistor (val1, val2, valGiven);
+            ana.addResistor(re);
+        }
+        if(space.equals("end") || space.equals("END") || space.equals("End"))
+            break;
+}
+    System.out.println("Done");
+}
+}
+
+------------------------------------------------------
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package analogcircuit;
+
+import java.util.ArrayList;
+/**
+ *
+ * @author zelen
+ */
+public class AnalogCircuit {
+    public static String voltageIn;
+    private static String objArray;
+    private static AnalogCircuit instance = null;
+    private ArrayList<InVals>circuit = new ArrayList<InVals>();
+    
+    public static AnalogCircuit getInstance()
+    {
+        if (instance == null)
+            instance = new AnalogCircuit(); //create new circuit, similar code to previou lab
+        return instance;
+    }
+    
+    public void addVoltage(Voltage volt) //adds a voltage to circuit array
+    {
+        circuit.add(volt);
+    }
+    
+    public void addResistor(Resistor res) //adds a resistor to the circuit array
+    {
+        circuit.add(res);
+    }
+    
+    private AnalogCircuit(){ //same as previous lab
+        
+    }
+    
+@Override
+public String toString()
+{
+    objArray =" ";
+    
+    for(int indi = 0; indi < circuit.size(); indi++);{
+        objArray = objArray +(circuit.get(indi).toString() + "\n");
+    }
+    return objArray;
+}
+    
+}
